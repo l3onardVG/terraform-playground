@@ -6,8 +6,16 @@ resource "aws_vpc" "my_vpc" {
    cidr_block = "10.0.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
+
+    tags = {
+    Name = "leo_vpc"
+  }
 }
 
+resource "aws_key_pair" "ssh_key" {
+  key_name   = "leonard-tf-key"
+  public_key = file("leonard-tf-key.pub")  # Update path if needed
+}
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.my_vpc.id
@@ -18,12 +26,20 @@ resource "aws_subnet" "public" {
     cidr_block = "10.0.2.0/24"
     availability_zone = var.aws_sub_region
     map_public_ip_on_launch = true
+
+        tags = {
+    Name = "pub-subnet"
+  }
 }
 
 resource "aws_subnet" "private" {
     vpc_id = aws_vpc.my_vpc.id
     cidr_block = "10.0.1.0/24"
     availability_zone = var.aws_sub_region
+
+            tags = {
+    Name = "private-subnet"
+  }
 }
 
 resource "aws_route_table" "public" {
@@ -73,6 +89,7 @@ resource "aws_instance" "server" {
     ami = var.instance_ami
     instance_type = var.instance_type
     subnet_id = aws_subnet.public.id
+    key_name = aws_key_pair.ssh_key.key_name
     associate_public_ip_address = true
     security_groups = [aws_security_group.ssh_icmp_sg.id]
 }

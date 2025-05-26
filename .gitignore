@@ -27,3 +27,5 @@ override.tf.json
 
 # Module directories (if pulled locally)
 .terraform.lock.hcl
+
+*.pub
