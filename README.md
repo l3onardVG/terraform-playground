@@ -85,3 +85,45 @@ terraform/
 `security/`: Establece reglas de seguridad para acceso SSH e ICMP (ping).
 
 `ec2/`: Crea una instancia EC2 utilizando una clave SSH y las configuraciones definidas.
+
+
+## Salida esperada después de aplicar los cambios a la infraestructura
+
+```bash
+
+module.ec2.aws_key_pair.key: Creating...
+module.vpc.aws_vpc.this: Creating...
+module.ec2.aws_key_pair.key: Creation complete after 0s [id=leonard-tf-key]
+module.vpc.aws_vpc.this: Still creating... [00m10s elapsed]
+module.vpc.aws_vpc.this: Creation complete after 12s [id=vpc-0862c8ae147b200df]
+module.network.aws_internet_gateway.this: Creating...
+module.network.aws_subnet.private: Creating...
+module.network.aws_subnet.public: Creating...
+module.security.aws_security_group.ssh_icmp: Creating...
+module.network.aws_internet_gateway.this: Creation complete after 1s [id=igw-0b858ecce3e6808bd]
+module.network.aws_route_table.public: Creating...
+module.network.aws_subnet.private: Creation complete after 2s [id=subnet-0739a88fc03858268]
+module.network.aws_route_table.public: Creation complete after 2s [id=rtb-0c0245e7ddbbd508d]
+module.security.aws_security_group.ssh_icmp: Creation complete after 4s [id=sg-06cb261b9575d72ac]
+module.network.aws_subnet.public: Still creating... [00m10s elapsed]
+module.network.aws_subnet.public: Creation complete after 12s [id=subnet-036554ff114da3726]
+module.network.aws_route_table_association.public_assoc: Creating...
+module.ec2.aws_instance.server: Creating...
+module.network.aws_route_table_association.public_assoc: Creation complete after 1s [id=rtbassoc-0851977bfe59ca778]
+module.ec2.aws_instance.server: Still creating... [00m10s elapsed]
+module.ec2.aws_instance.server: Creation complete after 14s [id=i-0518012082dfa2303]
+
+Apply complete! Resources: 9 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+ec2_public_ip = "3.237.188.221"
+
+```
+> NOTA: la ip es variable
+
+## Conectarse a la instancia creada
+
+```bash 
+ssh -i "leonard-tf-key.pem" ec2-user@<ip-generada>
+```
