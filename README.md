@@ -45,3 +45,43 @@ terraform plan
 terraform apply
 ```
 
+
+
+📁 Estructura del Proyecto
+El proyecto está organizado siguiendo una arquitectura modular para facilitar su reutilización, mantenimiento y escalabilidad. La estructura de carpetas es la siguiente:
+
+bash
+
+```bash 
+terraform/
+├── main.tf              # Archivo principal donde se orquestan los módulos
+├── variables.tf         # Definición de variables globales utilizadas por los módulos
+├── outputs.tf           # Exportación de salidas útiles (por ejemplo, IP pública de la instancia)
+├── README.md            # Documentación del proyecto
+├── leonard-tf-key.pub   # Clave pública SSH requerida (debe estar en la raíz)
+└── modules/             # Módulos reutilizables para componentes de infraestructura
+    ├── vpc/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    ├── network/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    ├── security/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    └── ec2/
+        ├── main.tf
+        ├── variables.tf
+        └── outputs.tf
+```
+### Descripción de módulos
+`vpc/`: Crea la red VPC con soporte para DNS.
+
+`network/`: Define subredes públicas y privadas, gateway de internet, y ruteo.
+
+`security/`: Establece reglas de seguridad para acceso SSH e ICMP (ping).
+
+`ec2/`: Crea una instancia EC2 utilizando una clave SSH y las configuraciones definidas.
