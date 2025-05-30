@@ -127,3 +127,19 @@ ec2_public_ip = "3.237.188.221"
 ```bash 
 ssh -i "leonard-tf-key.pem" ec2-user@<ip-generada>
 ```
+Transferir una llave desde un servidor a otro
+```
+scp -i ec2-user.pem ec2-user.pem ec2-user@<public-IP>:~/
+```
+Leer la llave privada directamente desde 1password
+```
+op read --out-file token.txt op://development/GitHub/credentials/personal_token
+```
+Comando completo
+```
+scp -i "leonard-tf-key.pem" $(op read --out-file leonard-tf-key.pem "op://Personal/tomsawyer-key/private key") ec2-user@44.203.219.213:~/
+```
+comando que funciona sin crear el archivo de salida intermedio
+```
+op read "op://Personal/tomsawyer-key/private key" | ssh -i leonard-tf-key.pem ec2-user@44.203.219.213 'cat > leonard-tf-key.pem'
+```

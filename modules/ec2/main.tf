@@ -6,7 +6,15 @@ resource "aws_key_pair" "key" {
 resource "aws_instance" "server" {
   ami                         = var.ami
   instance_type               = var.instance_type
-  subnet_id                   = var.subnet_id
+  subnet_id                   = var.public_subnet_id
+  key_name                    = aws_key_pair.key.key_name
+  associate_public_ip_address = true
+  security_groups             = [var.security_group_id]
+}
+resource "aws_instance" "server_2" {
+  ami                         = var.ami
+  instance_type               = var.instance_type
+  subnet_id                   = var.private_subnet_id
   key_name                    = aws_key_pair.key.key_name
   associate_public_ip_address = true
   security_groups             = [var.security_group_id]
