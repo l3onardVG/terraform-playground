@@ -10,6 +10,9 @@ resource "aws_instance" "server" {
   key_name                    = aws_key_pair.key.key_name
   associate_public_ip_address = true
   security_groups             = [var.security_group_id]
+      tags = {
+    Name = "public_server"
+  }
 }
 resource "aws_instance" "server_2" {
   ami                         = var.ami
@@ -18,4 +21,9 @@ resource "aws_instance" "server_2" {
   key_name                    = aws_key_pair.key.key_name
   associate_public_ip_address = true
   security_groups             = [var.security_group_id]
+
+    tags = {
+    Name = "private_server"
+  }
+
 }
