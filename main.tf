@@ -19,7 +19,6 @@ module "security" {
 
 module "ec2" {
   source            = "./modules/ec2"
-  ami               = var.instance_ami
   instance_type     = var.instance_type
   public_subnet_id  = module.network.public_subnet_id
   private_subnet_id = module.network.private_subnet_id

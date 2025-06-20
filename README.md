@@ -1,6 +1,28 @@
 # Proyecto Terraform - Infraestructura en AWS
 
-Este proyecto define y despliega una infraestructura básica en AWS utilizando Terraform. Incluye la creación de una VPC, subredes públicas y privadas, un gateway de Internet, una tabla de ruteo, un grupo de seguridad y una instancia EC2 accesible por SSH.
+Este proyecto define y despliega una infraestructura básica en AWS utilizando Terraform. Incluye la creación de una VPC, subredes públicas y privadas, un gateway de Internet, una tabla de ruteo, un grupo de seguridad y instancias EC2 accesibles por SSH.
+
+## 🆓 AWS Free Tier Optimizado
+
+Este proyecto está configurado para ser **compatible con AWS Free Tier**, utilizando recursos que no generan costos durante el primer año:
+
+### ✅ Recursos Free Tier Elegibles:
+- **AMI**: Amazon Linux 2 (automáticamente seleccionada)
+- **Instance Type**: t2.micro (750 horas/mes gratis)
+- **EBS Storage**: 30 GB incluidos en free tier
+- **Data Transfer**: 15 GB de salida incluidos
+- **VPC**: Gratis (sin límites)
+- **Internet Gateway**: Gratis
+- **Security Groups**: Gratis
+
+### 📊 Límites Free Tier:
+- **750 horas/mes** de instancias t2.micro
+- **30 GB** de almacenamiento EBS
+- **15 GB** de transferencia de datos de salida
+- **2 instancias** máximas (este proyecto crea 2 instancias)
+
+### 🔄 AMI Dinámica:
+El proyecto utiliza un **data source** que automáticamente obtiene la última versión de Amazon Linux 2, eliminando la necesidad de actualizar manualmente los IDs de AMI.
 
 ## 📋 Requisitos
 
@@ -28,6 +50,7 @@ Esto generará dos archivos:
 
 * `leonard-tf-key.pub` → clave pública (necesaria en este proyecto)
 
+## 🚀 Uso
 
 1. Inicializa Terraform:
 
@@ -45,12 +68,8 @@ terraform plan
 terraform apply
 ```
 
-
-
-📁 Estructura del Proyecto
+## 📁 Estructura del Proyecto
 El proyecto está organizado siguiendo una arquitectura modular para facilitar su reutilización, mantenimiento y escalabilidad. La estructura de carpetas es la siguiente:
-
-bash
 
 ```bash 
 terraform/
@@ -77,6 +96,7 @@ terraform/
         ├── variables.tf
         └── outputs.tf
 ```
+
 ### Descripción de módulos
 `vpc/`: Crea la red VPC con soporte para DNS.
 
@@ -84,8 +104,7 @@ terraform/
 
 `security/`: Establece reglas de seguridad para acceso SSH e ICMP (ping).
 
-`ec2/`: Crea una instancia EC2 utilizando una clave SSH y las configuraciones definidas.
-
+`ec2/`: Crea instancias EC2 utilizando una clave SSH y AMI dinámica (free tier elegible).
 
 ## Salida esperada después de aplicar los cambios a la infraestructura
 
@@ -127,19 +146,42 @@ ec2_public_ip = "3.237.188.221"
 ```bash 
 ssh -i "leonard-tf-key.pem" ec2-user@<ip-generada>
 ```
-Transferir una llave desde un servidor a otro
-```
+
+## 🔧 Comandos útiles
+
+### Transferir una llave desde un servidor a otro
+```bash
 scp -i ec2-user.pem ec2-user.pem ec2-user@<public-IP>:~/
 ```
-Leer la llave privada directamente desde 1password
-```
+
+### Leer la llave privada directamente desde 1password
+```bash
 op read --out-file token.txt op://development/GitHub/credentials/personal_token
 ```
-Comando completo
-```
+
+### Comando completo para transferir clave desde 1password
+```bash
 scp -i "leonard-tf-key.pem" $(op read --out-file leonard-tf-key.pem "op://Personal/tomsawyer-key/private key") ec2-user@44.203.219.213:~/
 ```
-comando que funciona sin crear el archivo de salida intermedio
-```
+
+### Comando que funciona sin crear el archivo de salida intermedio
+```bash
 op read "op://Personal/tomsawyer-key/private key" | ssh -i leonard-tf-key.pem ec2-user@44.203.219.213 'cat > leonard-tf-key.pem'
 ```
+
+### Configurar credenciales AWS desde 1password
+```bash
+export AWS_ACCESS_KEY_ID=$(op read "op://Personal/Tomsawyer aws/ACCES_KEY")
+export AWS_SECRET_ACCESS_KEY=$(op read "op://Personal/Tomsawyer aws/SECRET_ACCES_KEY")
+```
+
+## 💰 Costos y Free Tier
+
+Este proyecto está diseñado para ser **gratis** durante el primer año de AWS Free Tier. Los recursos utilizados son:
+
+- **VPC y Networking**: Gratis
+- **2x t2.micro instances**: 750 horas/mes cada una (gratis)
+- **EBS Storage**: 30 GB incluidos (gratis)
+- **Data Transfer**: 15 GB de salida (gratis)
+
+⚠️ **Importante**: Después del primer año o si excedes los límites del free tier, se aplicarán cargos estándar de AWS.

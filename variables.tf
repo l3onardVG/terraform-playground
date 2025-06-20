@@ -34,15 +34,9 @@ variable "private_subnet_cidr" {
   default     = "10.0.1.0/24"
 }
 
-variable "instance_ami" {
-  type        = string
-  description = "AMI ID for the EC2 instance"
-  default     = "ami-084568db4383264d4"
-}
-
 variable "instance_type" {
   type        = string
-  description = "Instance type for the EC2 instance"
+  description = "Instance type for the EC2 instance (t2.micro is free tier eligible)"
   default     = "t2.micro"
 }
 
