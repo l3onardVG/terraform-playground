@@ -7,7 +7,7 @@ Este proyecto define y despliega una infraestructura básica en AWS utilizando T
 Este proyecto está configurado para ser **compatible con AWS Free Tier**, utilizando recursos que no generan costos durante el primer año:
 
 ### ✅ Recursos Free Tier Elegibles:
-- **AMI**: Amazon Linux 2 (automáticamente seleccionada)
+- **AMI**: Amazon Linux 2023 (automáticamente seleccionada)
 - **Instance Type**: t2.micro (750 horas/mes gratis)
 - **EBS Storage**: 30 GB incluidos en free tier
 - **Data Transfer**: 15 GB de salida incluidos
@@ -22,7 +22,7 @@ Este proyecto está configurado para ser **compatible con AWS Free Tier**, utili
 - **2 instancias** máximas (este proyecto crea 2 instancias)
 
 ### 🔄 AMI Dinámica:
-El proyecto utiliza un **data source** que automáticamente obtiene la última versión de Amazon Linux 2, eliminando la necesidad de actualizar manualmente los IDs de AMI.
+El proyecto utiliza un **data source** que automáticamente obtiene la última versión de Amazon Linux 2023, eliminando la necesidad de actualizar manualmente los IDs de AMI.
 
 ## 📋 Requisitos
 
@@ -66,6 +66,68 @@ terraform plan
 
 ```bash
 terraform apply
+```
+
+## 🔍 Verificación del Sistema
+
+Una vez conectado a la instancia, puedes verificar los detalles del sistema operativo y las dependencias instaladas:
+
+### 📊 Información del Sistema Operativo:
+```bash
+# Ver la versión del sistema operativo
+cat /etc/os-release
+
+# Ver información detallada de Amazon Linux
+cat /etc/system-release
+
+# Ver la versión del kernel
+uname -a
+
+# Ver información de la distribución
+cat /etc/redhat-release
+```
+
+### 📦 Dependencias Instaladas:
+```bash
+# Ver paquetes instalados con dnf
+sudo dnf list installed
+
+# Ver paquetes específicos instalados
+sudo dnf list installed | grep -E "(git|dotnet|nodejs)"
+
+# Ver información detallada de un paquete
+sudo dnf info git
+sudo dnf info dotnet-sdk-8.0
+sudo dnf info nodejs
+```
+
+### 📋 Logs de Cloud-Init:
+Para ver el proceso de instalación y configuración automática:
+
+```bash
+# Ver el log completo de cloud-init
+sudo cat /var/log/cloud-init-output.log
+
+# Ver solo las últimas líneas del log
+sudo tail -f /var/log/cloud-init-output.log
+
+# Ver logs de cloud-init en tiempo real
+sudo journalctl -u cloud-init -f
+
+# Ver el estado de cloud-init
+sudo cloud-init status
+```
+
+### 💾 Verificación de Almacenamiento:
+```bash
+# Ver el espacio de disco disponible
+df -h
+
+# Ver información detallada de los volúmenes
+lsblk
+
+# Ver el uso de espacio en el directorio raíz
+du -sh /*
 ```
 
 ## 📁 Estructura del Proyecto
