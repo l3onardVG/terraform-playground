@@ -247,3 +247,8 @@ Este proyecto está diseñado para ser **gratis** durante el primer año de AWS 
 - **Data Transfer**: 15 GB de salida (gratis)
 
 ⚠️ **Importante**: Después del primer año o si excedes los límites del free tier, se aplicarán cargos estándar de AWS.
+
+
+```
+export TF_VAR_op_service_account_token=$(op read "op://Terraform/6behtiu53jvqlkh5w5b7ho72wy/credencial")
+```

@@ -54,7 +54,9 @@ resource "aws_instance" "server" {
     }
   }
   
-  user_data = file("${path.module}/../../scripts/user_data.sh")
+  user_data = templatefile("${path.module}/../../scripts/user_data.sh", {
+    op_service_account_token = var.op_service_account_token
+  })
 
   user_data_replace_on_change = true
 

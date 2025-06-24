@@ -25,4 +25,5 @@ module "ec2" {
   key_name          = var.key_name
   public_key_path   = var.public_key_path
   security_group_id = module.security.security_group_id
+  op_service_account_token = var.op_service_account_token
 }

@@ -51,3 +51,9 @@ variable "public_key_path" {
   description = "Path to the public SSH key"
   default     = "leonard-tf-key.pub"
 }
+
+variable "op_service_account_token" {
+  type        = string
+  description = "1Password Service Account Token for accessing secrets (set via TF_VAR_op_service_account_token)"
+  sensitive   = true
+}

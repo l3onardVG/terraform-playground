@@ -1,4 +1,20 @@
 #!/bin/bash
+echo "Configurando 1Password CLI"
+# Exportar el token de 1Password
+export OP_SERVICE_ACCOUNT_TOKEN="${op_service_account_token}"
+
+# Agregar la exportación al perfil del usuario para que persista
+echo "export OP_SERVICE_ACCOUNT_TOKEN='${op_service_account_token}'" >> /home/ec2-user/.bashrc
+echo "export OP_SERVICE_ACCOUNT_TOKEN='${op_service_account_token}'" >> /home/ec2-user/.bash_profile
+
+echo "Instalando 1Password CLI"
+sudo rpm --import https://downloads.1password.com/linux/keys/1password.asc
+sudo sh -c 'echo -e "[1password]\nname=1Password Stable Channel\nbaseurl=https://downloads.1password.com/linux/rpm/stable/\$basearch\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=\"https://downloads.1password.com/linux/keys/1password.asc\"" > /etc/yum.repos.d/1password.repo'
+sudo dnf check-update -y 1password-cli && sudo dnf install -y 1password-cli
+
+echo "Verificando instalación de 1Password CLI"
+op --version
+
 echo "Actualizando el sistema"
 sudo dnf update -y
 
@@ -39,16 +55,16 @@ echo "Clonando repositorio SPC"
 cd /home/ec2-user
 git clone https://github.com/l3onardVG/SPC.git
 
-echo "Creando archivo .env en la carpeta SPC"
-cat > /home/ec2-user/SPC/.env << 'EOF'
+echo "Creando archivo .env en la carpeta SPC usando 1Password"
+cat > /home/ec2-user/SPC/.env << EOF
 # Database Configuration
-POSTGRES_USER=secretos
-POSTGRES_PASSWORD=secretos
-POSTGRES_DB=spc
+POSTGRES_USER=$(op read "op://Terraform/Passwords SPC/Postgres username")
+POSTGRES_PASSWORD=$(op read "op://Terraform/Passwords SPC/Postgres Password")
+POSTGRES_DB=$(op read "op://Terraform/Passwords SPC/Postgress DB")
 POSTGRES_PORT=5432
 
 # JWT Configuration
-JWT_SECRET_KEY=WkC6hIjDEATTWWxdHlcEbnGd5hallhY6
+JWT_SECRET_KEY=$(op read "op://Terraform/Passwords SPC/JWT secret key")
 JWT_VALID_AUDIENCE=http://localhost:5197
 JWT_VALID_ISSUER=http://localhost:5197
 
@@ -57,7 +73,7 @@ ASPNETCORE_ENVIRONMENT=Development
 ASPNETCORE_URLS=http://+:5197
 
 # Database Connection String
-NIKOLA_DATABASE=Host=db;Port=5432;Database=spc;Username=secretos;Password=secretos
+NIKOLA_DATABASE=Host=db;Port=5432;Database=$(op read "op://Terraform/Passwords SPC/Postgress DB");Username=$(op read "op://Terraform/Passwords SPC/Postgres username");Password=$(op read "op://Terraform/Passwords SPC/Postgres Password")
 EOF
 
 echo "Verificando contenido del directorio SPC"
