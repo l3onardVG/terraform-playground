@@ -24,6 +24,52 @@ Este proyecto está configurado para ser **compatible con AWS Free Tier**, utili
 ### 🔄 AMI Dinámica:
 El proyecto utiliza un **data source** que automáticamente obtiene la última versión de Amazon Linux 2023, eliminando la necesidad de actualizar manualmente los IDs de AMI.
 
+## 🔐 Gestión Segura de Secretos con 1Password
+
+Este proyecto integra **1Password CLI** para la gestión segura de secretos y credenciales:
+
+### ✅ Características de Seguridad:
+- **1Password CLI** instalado automáticamente en las instancias
+- **Service Account Token** configurado para acceso programático
+- **Secretos dinámicos** en lugar de valores hardcodeados
+- **Variables de entorno seguras** con `sensitive = true`
+- **Configuración persistente** en perfiles de usuario
+
+### 🔧 Configuración de 1Password:
+
+#### **1. Configurar el Service Account Token**:
+```bash
+# Exportar el token de 1Password
+export TF_VAR_op_service_account_token=$(op read "op://Terraform/6behtiu53jvqlkh5w5b7ho72wy/credencial")
+
+# O usar directamente
+TF_VAR_op_service_account_token=$(op read "op://Terraform/6behtiu53jvqlkh5w5b7ho72wy/credencial") terraform apply
+```
+
+#### **2. Secretos Requeridos en 1Password**:
+El proyecto requiere los siguientes secretos en tu vault de 1Password:
+
+```
+Terraform/Passwords SPC/
+├── Postgres username
+├── Postgres Password
+├── Postgress DB
+└── JWT secret key
+```
+
+#### **3. Estructura de Secretos**:
+- **Base de datos**: Usuario, contraseña y nombre de DB
+- **JWT**: Clave secreta para autenticación
+- **Variables de entorno**: Configuración automática en `.env`
+
+### 🚀 Automatización de Secretos:
+
+El user data script automáticamente:
+1. **Instala 1Password CLI** con repositorio oficial
+2. **Configura el service account token** como variable de entorno
+3. **Crea el archivo .env** con secretos reales de 1Password
+4. **Configura persistencia** en `.bashrc` y `.bash_profile`
+
 ## 📋 Requisitos
 
 Antes de ejecutar este proyecto, asegúrate de tener:
@@ -31,6 +77,9 @@ Antes de ejecutar este proyecto, asegúrate de tener:
 - Una cuenta de AWS y credenciales configuradas (por ejemplo, mediante `aws configure`)
 - [Terraform instalado](https://developer.hashicorp.com/terraform/downloads)
 - Una clave SSH generada para acceder a la instancia EC2
+- **1Password CLI** instalado localmente
+- **Service Account Token** de 1Password configurado
+- **Secretos requeridos** creados en tu vault de 1Password
 
 ## 🔐 Clave SSH requerida
 
@@ -52,18 +101,23 @@ Esto generará dos archivos:
 
 ## 🚀 Uso
 
-1. Inicializa Terraform:
+### **1. Configurar 1Password**:
+```bash
+# Configurar el token de service account
+export TF_VAR_op_service_account_token=$(op read "op://Terraform/6behtiu53jvqlkh5w5b7ho72wy/credencial")
+```
 
+### **2. Inicializar Terraform**:
 ```bash
 terraform init
 ```
-2. Revisa el plan de ejecución:
 
+### **3. Revisar el plan**:
 ```bash
 terraform plan
 ```
-3. Aplica la infraestructura
 
+### **4. Aplicar la infraestructura**:
 ```bash
 terraform apply
 ```
@@ -130,6 +184,18 @@ lsblk
 du -sh /*
 ```
 
+### 🔐 Verificación de 1Password:
+```bash
+# Verificar que 1Password CLI está instalado
+op --version
+
+# Verificar que el token está configurado
+echo $OP_SERVICE_ACCOUNT_TOKEN
+
+# Leer secretos de prueba
+op read "op://Terraform/Passwords SPC/Postgres username"
+```
+
 ## 📁 Estructura del Proyecto
 El proyecto está organizado siguiendo una arquitectura modular para facilitar su reutilización, mantenimiento y escalabilidad. La estructura de carpetas es la siguiente:
 
@@ -140,6 +206,8 @@ terraform/
 ├── outputs.tf           # Exportación de salidas útiles (por ejemplo, IP pública de la instancia)
 ├── README.md            # Documentación del proyecto
 ├── leonard-tf-key.pub   # Clave pública SSH requerida (debe estar en la raíz)
+├── scripts/
+│   └── user_data.sh     # Script de configuración automática con 1Password
 └── modules/             # Módulos reutilizables para componentes de infraestructura
     ├── vpc/
     │   ├── main.tf
@@ -237,6 +305,11 @@ export AWS_ACCESS_KEY_ID=$(op read "op://Personal/Tomsawyer aws/ACCES_KEY")
 export AWS_SECRET_ACCESS_KEY=$(op read "op://Personal/Tomsawyer aws/SECRET_ACCES_KEY")
 ```
 
+### Configurar token de 1Password para Terraform
+```bash
+export TF_VAR_op_service_account_token=$(op read "op://Terraform/6behtiu53jvqlkh5w5b7ho72wy/credencial")
+```
+
 ## 💰 Costos y Free Tier
 
 Este proyecto está diseñado para ser **gratis** durante el primer año de AWS Free Tier. Los recursos utilizados son:
@@ -248,7 +321,21 @@ Este proyecto está diseñado para ser **gratis** durante el primer año de AWS 
 
 ⚠️ **Importante**: Después del primer año o si excedes los límites del free tier, se aplicarán cargos estándar de AWS.
 
+## 🔐 Seguridad y Mejores Prácticas
 
-```
-export TF_VAR_op_service_account_token=$(op read "op://Terraform/6behtiu53jvqlkh5w5b7ho72wy/credencial")
-```
+### **Gestión de Secretos**:
+- ✅ **1Password CLI** para gestión segura de secretos
+- ✅ **Service Account Token** para acceso programático
+- ✅ **Variables sensibles** en Terraform
+- ✅ **Sin secretos hardcodeados** en el código
+
+### **Configuración de Red**:
+- ✅ **VPC privada** para aislamiento de red
+- ✅ **Security Groups** con reglas mínimas necesarias
+- ✅ **Puertos específicos** habilitados (22, 3000)
+- ✅ **EBS encriptado** para almacenamiento seguro
+
+### **Monitoreo y Logs**:
+- ✅ **Cloud-init logs** para debugging
+- ✅ **Docker logs** para monitoreo de aplicaciones
+- ✅ **Verificación de servicios** automática
