@@ -38,7 +38,7 @@ resource "aws_key_pair" "key" {
 resource "aws_instance" "server" {
   ami                         = data.aws_ami.amazon_linux_2023.id
   instance_type               = var.instance_type
-  subnet_id                   = var.public_subnet_id
+  subnet_id                   = var.subnet_id
   key_name                    = aws_key_pair.key.key_name
   associate_public_ip_address = true
   security_groups             = [var.security_group_id]
@@ -64,16 +64,16 @@ resource "aws_instance" "server" {
     Name = "public_server"
   }
 }
-resource "aws_instance" "server_2" {
-  ami                         = data.aws_ami.amazon_linux_2023.id
-  instance_type               = var.instance_type
-  subnet_id                   = var.private_subnet_id
-  key_name                    = aws_key_pair.key.key_name
-  associate_public_ip_address = true
-  security_groups             = [var.security_group_id]
+# resource "aws_instance" "server_2" {
+#   ami                         = data.aws_ami.amazon_linux_2023.id
+#   instance_type               = var.instance_type
+#   subnet_id                   = var.private_subnet_id
+#   key_name                    = aws_key_pair.key.key_name
+#   associate_public_ip_address = true
+#   security_groups             = [var.security_group_id]
 
-    tags = {
-    Name = "private_server"
-  }
+#     tags = {
+#     Name = "private_server"
+#   }
 
-}
+#}

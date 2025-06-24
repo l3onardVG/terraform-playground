@@ -305,6 +305,11 @@ export AWS_ACCESS_KEY_ID=$(op read "op://Personal/Tomsawyer aws/ACCES_KEY")
 export AWS_SECRET_ACCESS_KEY=$(op read "op://Personal/Tomsawyer aws/SECRET_ACCES_KEY")
 ```
 
+```
+export AWS_ACCESS_KEY_ID=$(op read "op://Personal/Key Nodo G2/username")
+export AWS_SECRET_ACCESS_KEY=$(op read "op://Personal/Key Nodo G2/password")
+```
+
 ### Configurar token de 1Password para Terraform
 ```bash
 export TF_VAR_op_service_account_token=$(op read "op://Terraform/6behtiu53jvqlkh5w5b7ho72wy/credencial")
